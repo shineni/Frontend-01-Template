@@ -1,0 +1,74 @@
+﻿【Exercise 1： 编写带括号的四则运算产生式】
+    steps:
+        1.定义一个十进制整数 0 11
+        2.实现乘除产生式（优先级高）
+        3.实现加减产生式
+        4.添加与和或逻辑运算产生式
+        5.添加括号
+        
+        <Number>::="0"|"1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"
+
+        <DecimalNumber>::="0"|(("1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9")<Number>*)
+
+        <PrimaryExpression>::= <DecimalNumber>|"("<LogicExpression>")"
+        
+        <MultiptiveExpression>::=<PrimaryExpression>|
+                                <MultiptiveExpression>"*"<PrimaryExpression>|
+                                <MultiptiveExpression>"/"<PrimaryExpression>
+
+        <AdditiveExpression>::= <MultiptiveExpression>|
+                                <AdditiveExpression>"+"<MultiptiveExpression>|
+                                <AdditiveExpression>"-"<MultiptiveExpression>
+
+        <LogicExpression>::= <AdditiveExpression>|
+                            <LogicExpression>"||"<AdditiveExpression>|
+                            <LogicExpression>"&&"<AdditiveExpression>
+
+【Exercise 2： 给你所知道的计算机语言分类】
+    C               2型
+    C++             非形式化    
+    VB              1型
+    Javascript      1型
+    C#              2型
+    Java            2型           
+
+【Exercise 3： 写一个正则表达式 匹配所有 Number 直接量】
+ / (^("0B"|"0b"){1}[0-1]*)|(^("0O"|"0o"){1}[0-7]*)|(^("0X"|"0x"){1}[0-9a-fA-F]*)|((^[1-9][0-9]*){1}([0-9]?.?[0-9]*[eE]?(^[1-9](0-9)*)?))/
+
+ 【Exercise 4： 写一个 UTF-8 Encoding 的函数】
+//input like U+XXXX
+
+        function UTF8EnCoding(unicode){
+            var value = "0x"+ unicode.substring(2)
+            console.log(value)
+            var output =""
+            var zero="000"
+            var binstring = parseInt(value,16).toString(2);
+            // 一个字节
+            if(binstring.length<8){             
+              output = "0"+binstring
+            }
+            // 两个个字节
+            else{
+                var byte = parseInt((binstring.length+3)/5)
+                console.log(byte)
+                let allstring = "000"+binstring;
+                let startpart = ""
+                let secondpart = ""
+                for(let i=1;i<=byte;i++){
+                    startpart="1"+ startpart
+                }
+                startpart = startpart +"0"+ allstring.substring(0,7-byte)
+
+                for(let i=1;i<byte;i++){
+                    secondpart = secondpart+"10"+allstring.substring(8-byte+5*(i-1),8-byte+5*(i-1)+6)
+                }
+                output = startpart+secondpart
+            }
+            console.log(output)
+            return output;
+        }
+        console.log(UTF8EnCoding("U+200001"))
+
+ 【Exercise 5： 写一个正则表达式，匹配所有的字符串直接量，单引号和双引号】
+	/(^"{1}((*)+)?$"{1})|(^'{1}((*)+)?$'{1})/
