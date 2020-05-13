@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //1. 广度优先搜索
+        //set为了去重
+        var set = new Set();
+        var queue = [
+            eval,
+            isFinite,
+            isNaN,
+            parseFloat,
+            parseInt,
+            decodeURI,
+            decodeURIComponent,
+            encodeURI,
+            encodeURIComponent,
+            Array,
+            Date,
+            RegExp,
+            Promise,
+            Proxy,
+            Map,
+            WeakMap,
+            Set,
+            WeakSet,
+            Function,
+            Boolean,
+            String,
+            Number,
+            Symbol,
+            Object,
+            Error,
+            EvalError,
+            RangeError,
+            ReferenceError,
+            SyntaxError,
+            TypeError,
+            URIError,
+            ArrayBuffer,
+            SharedArrayBuffer,
+            DataView,
+            Float32Array,
+            Float64Array,
+            Int8Array,
+            Int16Array,
+            Int32Array,
+            Uint8Array,
+            Uint16Array,
+            Uint32Array,
+            Uint8ClampedArray,
+            Atomics,
+            JSON,
+            Math,
+            Reflect
+            ];
+            let current;
+            //取第一个对象，加到set里面去
+
+            //遍历属性
+            while(queue.length){
+                current = queue.shift();
+                if(set.has(current)){
+                    continue
+                }
+                set.add(current);
+                console.log(current)
+                // for(let p in current){
+                //     if(current[p] instanceof Object)
+                //         queue.push(current[p])
+                // }  
+                for(let p of Object.getOwnPropertyNames(current)){
+                    var property = Object.getOwnPropertyDescriptor(current,p)
+                    
+                    if(property.hasOwnProperty("value")&& property.value instanceof Object)
+                        queue.push(property.value);
+                    if (property.hasOwnProperty("getter")){
+                        // debugger;
+                        queue.push(property.getter)
+                    }
+                    if (property.hasOwnProperty("setter")){
+                        // debugger;
+                        queue.push(property.setter)
+                    }
+                }
+            
+            
+            }
+
+
+
+
+
+// objects.forEach(o => set.add(o));
+
+// for(var i = 0; i < objects.length; i++) {
+//     var o = objects[i]
+//     for(var p of Object.getOwnPropertyNames(o)) {
+//         var d = Object.getOwnPropertyDescriptor(o, p)
+//         if( (d.value !== null && typeof d.value === "object") || (typeof d.value === "function"))
+//             if(!set.has(d.value))
+//                 set.add(d.value), objects.push(d.value);
+//         if( d.get )
+//             if(!set.has(d.get))
+//                 set.add(d.get), objects.push(d.get);
+//         if( d.set )
+//             if(!set.has(d.set))
+//                 set.add(d.set), objects.push(d.set);
+//     }
+// }
+
+//2.改造
+/*
+    2.1给globalProperties加引号，为了取到上一层的名字，然后从全局对象上去取，也不能直接变成quene
+    2.2 写一个for循环，塞进quene里面,为了显示路径，我们push一个path和一个object
+*/
+
+        var set = new Set();
+        
+        var globalProperties = [
+            "eval",
+            "isFinite",
+            "isNaN",
+            "parseFloat",
+            "parseInt",
+            "decodeURI",
+            "decodeURIComponent",
+            "encodeURI",
+            "encodeURIComponent",
+            "Array",
+            "Date",
+            "RegExp",
+            "Promise",
+            "Proxy",
+            "Map",
+            "WeakMap",
+            "Set",
+            "WeakSet",
+            "Function",
+            "Boolean",
+            "String",
+            "Number",
+            "Symbol",
+            "Object",
+            "Error",
+            "EvalError",
+            "RangeError",
+            "ReferenceError",
+            "SyntaxError",
+            "TypeError",
+            "URIError",
+            "ArrayBuffer",
+            "SharedArrayBuffer",
+            "DataView",
+            "Float32Array",
+            "Float64Array",
+            "Int8Array",
+            "Int16Array",
+            "Int32Array",
+            "Uint8Array",
+            "Uint16Array",
+            "Uint32Array",
+            "Uint8ClampedArray",
+            "Atomics",
+            "JSON",
+            "Math",
+            "Reflect"
+            ];
+
+            var queue = [];
+            for(var p of globalProperties){
+                queue.push({
+                    path:[p],
+                    object:this[p]
+                })
+
+            }
+            let current
+            while(queue.length){
+                current = queue.shift();
+                // console.log(current.path.join('.'))
+                //做hash的时候要加上object
+                if(set.has(current.object)){
+                    continue;
+                }
+                set.add(current.object);
+                // for(let p in current){
+                //     if(current[p] instanceof Object)
+                //         queue.push(current[p])
+                // }  
+                // let proto = Object.getPrototypeOf(current.Object);
+                // if(proto){
+                //     queue.push({
+                //         path:current.path.concat(["__proto__"]),
+                //         Object:proto
+                //     })
+                // }
+
+                for(let p of Object.getOwnPropertyNames(current.object)){
+                    var property = Object.getOwnPropertyDescriptor(current.object,p)
+                    // if(p==="dotAll")
+                    //     debugger;
+                    if(property.hasOwnProperty("value")&&
+                    ((property.value!=null) && (typeof property.value=="object"||typeof property.value=="object") )
+                    &&  property.value instanceof Object)
+                        queue.push({
+                                path:current.path.concat([p]),
+                                object:property.value
+                            })
+                    if (property.hasOwnProperty("get")&&(typeof property.get =="function")){
+                        debugger;
+                        queue.push({
+                            path:current.path.concat([p]),
+                            object:property.get
+                        })
+                    }
+                    if (property.hasOwnProperty("set")&&(typeof property.set =="function")){
+                        debugger;
+                        queue.push({
+                            path:current.path.concat([p]),
+                            object:property.set
+                        })
+                    }
+                }
+            
+            
+            }
+
+
+            // 3.代码片段Generator
+            function* foo(){
+                yield 1;
+                yield 2;
+                yield 3;   //执行yield的时候必须知道在哪个Generator里面，所以generator字段为Generator函数量身定制
+                
+            }
+            var g = foo();  
+            g.next()
+            var o = new  Array()  //不需要Realm 因为本身是一个变量
+          
+            // //
+            Object.getPrototypeOf({})
+            Object.getPrototypeOf({}) ===Object.prototype //true
+            var iframe = document.createElement("iframe")
+            document.body.appendChild(iframe)
+            iframe.contentWindow.document.body.innerHTML="<script>window.o={}</script>"
+
+           
+
+
+    </script>
+    
+</body>
+</html>
