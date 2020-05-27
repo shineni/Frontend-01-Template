@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //案例1 ：字符串中找到a
+        function match_a(string){
+            //现在的版本 for of 也是可以用于字符串
+            for(let c of string){
+                if(c=="a"){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        match_a("I am groot")
+       
+         //案例2 ：字符串中找到字符串 ab
+         //【思路】用bool型变量foundA来标识是否找到了变量a, 用bool型变量foundB来标识是否找到了变量b
+                 //【状态机思路】用bool型变量foundA来标识是否找到了变量a
+        function match_ab(string){
+            let foundA = false;
+            for(let c of string){
+                if(c=="a"){
+                    foundA = true;
+                }
+                else if(foundA && c=="b"){
+                    return true;
+                }
+                else{
+                    foundA = false
+                }
+            }
+            return false;
+        }
+        match_ab("I abm groot")
+         
+         //案例3: 在字符串中找到字符串 abcdef
+        /*
+        思路，加五个变量标识
+        */ 
+       function match_abcde(string){
+            let foundA = false;
+            let foundB = false;
+            let foundC = false;
+            let foundD = false;
+            let foundE = false;
+            for(let c of string){
+                if(c=="a"){
+                    foundA = true;
+                }
+                else if(foundA && c == "b"){
+                    foundB = true;
+                }
+                else if(foundB && c == "c"){
+                    foundC = true;
+                }
+                else if(foundC && c == "d"){
+                    foundD = true;
+                }
+                else if(foundD && c == "e"){
+                    foundE = true;
+                }
+                else if(foundE && c == "f"){
+                    return true;
+                }
+                else{
+                    foundA = false;
+                    foundB = false;
+                    foundC = false;
+                    foundD = false;
+                    foundE = false;
+                }
+            }
+
+       }
+
+        /*思路2状态机实现*/ 
+       function match_abcde(string){
+           let state = start;
+           for(let c of string){
+               state = state(c);
+           }
+           return state === end ;
+       }
+
+       function start(c){
+           if(c==="a"){
+               return foundA;
+           }
+           else{
+               return start;     //状态不变
+           }
+       }
+
+       function end(c){
+           return end;
+       }
+
+       function foundA(c){
+           if(c ==="b"){
+               return foundB;
+           }
+           else{
+               return start;
+           }
+       }
+
+       function foundB(c){
+           if(c ==="c"){
+               return foundC;
+           }
+           else{
+               return start;
+           }
+       }
+
+       function foundC(c){
+           if(c ==="d"){
+               return foundD;
+           }
+           else{
+               return start;
+           }
+       }
+
+       function foundD(c){
+           if(c ==="e"){
+               return foundE;
+           }
+           else{
+               return start;
+           }
+       }
+
+       function foundF(c){
+           if(c ==="f"){
+               return end;
+           }
+           else{
+               return start;
+           }
+       }
+
+
+        match_abcde("I am abcdef")
+         //案例4: 在字符串中找到字符串 abcabx
+         function match_abcabx(string){
+             let state = start;
+             for(let c of string){
+                 state = state(c);
+             }
+             return state === end;
+         }
+
+         function start(c){
+           if(c==="a"){
+               return foundA;
+           }
+           else{
+               return start;     //状态不变
+           }
+       }
+
+       function end(c){
+           return end;
+       }
+
+       function foundA(c){
+           if(c ==="b"){
+               return foundB;
+           }
+           else{
+               return start(c);
+           }
+       }
+
+       function foundB(c){
+           if(c ==="c"){
+               return foundC;
+           }
+           else{
+               return start(c);
+           }
+       }
+
+       function foundC(c){
+           if(c ==="a"){
+               return foundA2;
+           }
+           else{
+               return start(c);
+           }
+       }
+
+       function foundA2(c){
+           if(c ==="b"){
+               return foundB2;
+           }
+           else{
+               return start(c);
+           }
+       }
+
+       function foundB2(c){
+           if(c ==="x"){
+               return end;
+           }
+           else{
+               return foundB(c);
+           }
+       }
+       match_abcabx("abcabxsd")
+
+        //案例5: 在字符串中找到字符串 abababx
+        function match_abababx(string){
+             let state = start;
+             for(let c of string){
+                 state = state(c);
+             }
+             return state === end;
+         }
+
+         function start(c){
+           if(c==="a"){
+               return foundA;
+           }
+           else{
+               return start;     //状态不变
+           }
+       }
+
+       function end(c){
+           return end;
+       }
+
+       function foundA(c){
+           if(c ==="b"){
+               return foundB;
+           }
+           else{
+               return start(c);
+           }
+       }
+
+       function foundB(c){
+           if(c ==="a"){
+               return foundA2;
+           }
+           else{
+               return start(c);
+           }
+       }
+
+       function foundA2(c){
+           if(c ==="b"){
+               return foundB2;
+           }
+           else{
+               return start(c);
+           }
+       }
+
+       function foundB2(c){
+           if(c==="a"){
+               return foundA3;
+           }
+           else{
+               return start(c);
+           }
+       }
+
+       function foundA3(c){
+           if(c==="b"){
+               return foundX;
+           }
+           else{
+               return start(c);
+           }
+       }
+
+       function foundX(c){
+           if(c ==="x"){
+               return end;
+           }
+           else{
+               return foundB2(c);
+           }
+       }
+       cosnosle.log(match_abababx("abababxsd"))
+
+
+    </script>
+</body>
+</html>
